@@ -35,10 +35,10 @@ import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import static org.apache.camel.component.micrometer.MicrometerConstants.METRICS_REGISTRY_NAME;
 import static org.apache.camel.component.micrometer.MicrometerConstants.HEADER_COUNTER_DECREMENT;
 import static org.apache.camel.component.micrometer.MicrometerConstants.HEADER_COUNTER_INCREMENT;
 import static org.apache.camel.component.micrometer.MicrometerConstants.HEADER_METRIC_NAME;
+import static org.apache.camel.component.micrometer.MicrometerConstants.METRICS_REGISTRY_NAME;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(CamelSpringRunner.class)
@@ -125,7 +125,7 @@ public class CounterRouteTest {
     public void testOverrideIncrement() throws Exception {
         endpoint.expectedMessageCount(1);
         producer1.sendBodyAndHeader(new Object(), HEADER_COUNTER_INCREMENT, 14.0D);
-        assertEquals(14.0D, registry.find(MicrometerConstants.HEADER_PREFIX + "." + "A").counter().count(), 0.01D);
+        assertEquals(14.0D, registry.find("A").counter().count(), 0.01D);
         endpoint.assertIsSatisfied();
     }
 
@@ -133,7 +133,7 @@ public class CounterRouteTest {
     public void testOverrideDecrement() throws Exception {
         endpoint.expectedMessageCount(1);
         producer2.sendBodyAndHeader(new Object(), HEADER_COUNTER_DECREMENT, 7.0D);
-        assertEquals(-7.0D, registry.find(MicrometerConstants.HEADER_PREFIX + "." + "B").counter().count(), 0.01D);
+        assertEquals(-7.0D, registry.find("B").counter().count(), 0.01D);
         endpoint.assertIsSatisfied();
     }
 
@@ -141,7 +141,7 @@ public class CounterRouteTest {
     public void testOverrideUsingConstantValue() throws Exception {
         endpoint.expectedMessageCount(1);
         producer3.sendBody(new Object());
-        assertEquals(417.0D, registry.find(MicrometerConstants.HEADER_PREFIX + "." + "C").counter().count(), 0.01D);
+        assertEquals(417.0D, registry.find("C").counter().count(), 0.01D);
         endpoint.assertIsSatisfied();
     }
 
@@ -150,7 +150,7 @@ public class CounterRouteTest {
         endpoint.expectedMessageCount(1);
         String message = "Hello from Camel Metrics!";
         producer4.sendBody(message);
-        Counter counter = registry.find(MicrometerConstants.HEADER_PREFIX + "." + "D").counter();
+        Counter counter = registry.find("D").counter();
         assertEquals(message.length(), counter.count(), 0.01D);
         assertEquals("b", counter.getId().getTag("a"));
         endpoint.assertIsSatisfied();

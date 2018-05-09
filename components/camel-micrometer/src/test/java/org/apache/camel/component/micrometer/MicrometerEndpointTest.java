@@ -83,7 +83,7 @@ public class MicrometerEndpointTest {
     }
 
     @Test(expected = RuntimeCamelException.class)
-    public void testCreateConsumer() throws Exception {
+    public void testCreateConsumer() {
         endpoint.createConsumer(processor);
     }
 

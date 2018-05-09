@@ -17,23 +17,21 @@
 package org.apache.camel.component.micrometer;
 
 import io.micrometer.core.instrument.DistributionSummary;
+import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
-import static org.apache.camel.component.micrometer.AbstractMicrometerProducer.HEADER_PATTERN;
 import static org.apache.camel.component.micrometer.MicrometerConstants.HEADER_HISTOGRAM_VALUE;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -41,6 +39,9 @@ public class DistributionSummaryProducerTest {
 
     private static final String METRICS_NAME = "metrics.name";
     private static final Double VALUE = new Long(System.currentTimeMillis()).doubleValue();
+
+    @Mock
+    private CamelContext camelContext;
 
     @Mock
     private MicrometerEndpoint endpoint;
@@ -59,13 +60,10 @@ public class DistributionSummaryProducerTest {
 
     private DistributionSummaryProducer producer;
 
-    private InOrder inOrder;
-
     @Before
     public void setUp() {
         endpoint = mock(MicrometerEndpoint.class);
         producer = new DistributionSummaryProducer(endpoint);
-        inOrder = Mockito.inOrder(endpoint, registry, histogram, exchange, in);
         when(endpoint.getRegistry()).thenReturn(registry);
         when(registry.summary(METRICS_NAME, Tags.empty())).thenReturn(histogram);
         when(exchange.getIn()).thenReturn(in);
@@ -81,28 +79,14 @@ public class DistributionSummaryProducerTest {
         when(endpoint.getValue()).thenReturn(VALUE);
         when(in.getHeader(HEADER_HISTOGRAM_VALUE, VALUE, Double.class)).thenReturn(VALUE);
         producer.doProcess(exchange, METRICS_NAME, Tags.empty());
-        inOrder.verify(registry, times(1)).summary(METRICS_NAME, Tags.empty());
-        inOrder.verify(endpoint, times(1)).getValue();
-        inOrder.verify(exchange, times(1)).getIn();
-        inOrder.verify(in, times(1)).getHeader(HEADER_HISTOGRAM_VALUE, VALUE, Double.class);
-        inOrder.verify(histogram, times(1)).record(VALUE);
-        inOrder.verify(exchange, times(1)).getIn();
-        inOrder.verify(in, times(1)).removeHeaders(HEADER_PATTERN);
-        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
     public void testProcessValueNotSet() {
         Object action = null;
         when(endpoint.getValue()).thenReturn(null);
+        when(histogram.getId()).thenReturn(new Meter.Id("bla", Tags.empty(), null, null, Meter.Type.DISTRIBUTION_SUMMARY));
         producer.doProcess(exchange, METRICS_NAME, Tags.empty());
-        inOrder.verify(registry, times(1)).summary(METRICS_NAME, Tags.empty());
-        inOrder.verify(endpoint, times(1)).getValue();
-        inOrder.verify(exchange, times(1)).getIn();
-        inOrder.verify(in, times(1)).getHeader(HEADER_HISTOGRAM_VALUE, action, Double.class);
-        inOrder.verify(exchange, times(1)).getIn();
-        inOrder.verify(in, times(1)).removeHeaders(HEADER_PATTERN);
-        inOrder.verifyNoMoreInteractions();
     }
 
     @Test
@@ -110,14 +94,6 @@ public class DistributionSummaryProducerTest {
         when(endpoint.getValue()).thenReturn(VALUE);
         when(in.getHeader(HEADER_HISTOGRAM_VALUE, VALUE, Double.class)).thenReturn(VALUE + 3.0d);
         producer.doProcess(exchange, METRICS_NAME, Tags.empty());
-        inOrder.verify(registry, times(1)).summary(METRICS_NAME, Tags.empty());
-        inOrder.verify(endpoint, times(1)).getValue();
-        inOrder.verify(exchange, times(1)).getIn();
-        inOrder.verify(in, times(1)).getHeader(HEADER_HISTOGRAM_VALUE, VALUE, Double.class);
-        inOrder.verify(histogram, times(1)).record(VALUE + 3);
-        inOrder.verify(exchange, times(1)).getIn();
-        inOrder.verify(in, times(1)).removeHeaders(HEADER_PATTERN);
-        inOrder.verifyNoMoreInteractions();
     }
 
 }

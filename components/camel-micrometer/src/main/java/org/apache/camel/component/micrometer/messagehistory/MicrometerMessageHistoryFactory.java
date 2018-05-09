@@ -28,6 +28,7 @@ import org.apache.camel.StaticService;
 import org.apache.camel.spi.MessageHistoryFactory;
 import org.apache.camel.support.ServiceSupport;
 import org.apache.camel.util.ObjectHelper;
+import static org.apache.camel.component.micrometer.MicrometerConstants.DEFAULT_CAMEL_MESSAGE_HISTORY_METER_NAME;
 
 /**
  * A factory to setup and use {@link MicrometerMessageHistory} as message history implementation.
@@ -38,7 +39,6 @@ public class MicrometerMessageHistoryFactory extends ServiceSupport implements C
     private MeterRegistry meterRegistry;
     private boolean prettyPrint = true;
     private TimeUnit durationUnit = TimeUnit.MILLISECONDS;
-    private String name;
 
     @Override
     public CamelContext getCamelContext() {
@@ -85,14 +85,6 @@ public class MicrometerMessageHistoryFactory extends ServiceSupport implements C
         this.durationUnit = durationUnit;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @Override
     @Deprecated
     public MessageHistory newMessageHistory(String routeId, NamedNode namedNode, Date date) {
@@ -101,8 +93,7 @@ public class MicrometerMessageHistoryFactory extends ServiceSupport implements C
 
     @Override
     public MessageHistory newMessageHistory(String routeId, NamedNode namedNode, long timestamp) {
-        return new MicrometerMessageHistory(meterRegistry, camelContext.getRoute(routeId), namedNode,
-                name, timestamp);
+        return new MicrometerMessageHistory(meterRegistry, camelContext.getRoute(routeId), namedNode, timestamp);
     }
 
     @Override
@@ -115,6 +106,7 @@ public class MicrometerMessageHistoryFactory extends ServiceSupport implements C
                 messageHistoryService.setMeterRegistry(getMeterRegistry());
                 messageHistoryService.setPrettyPrint(isPrettyPrint());
                 messageHistoryService.setDurationUnit(getDurationUnit());
+                messageHistoryService.setMatchingNames(name -> name.equals(DEFAULT_CAMEL_MESSAGE_HISTORY_METER_NAME));
                 camelContext.addService(messageHistoryService);
             }
         } catch (Exception e) {

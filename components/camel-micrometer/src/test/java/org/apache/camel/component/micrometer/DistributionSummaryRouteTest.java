@@ -36,9 +36,9 @@ import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
-import static org.apache.camel.component.micrometer.MicrometerConstants.METRICS_REGISTRY_NAME;
 import static org.apache.camel.component.micrometer.MicrometerConstants.HEADER_HISTOGRAM_VALUE;
 import static org.apache.camel.component.micrometer.MicrometerConstants.HEADER_METRIC_NAME;
+import static org.apache.camel.component.micrometer.MicrometerConstants.METRICS_REGISTRY_NAME;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(CamelSpringRunner.class)
@@ -101,9 +101,9 @@ public class DistributionSummaryRouteTest {
     public void testOverrideValue() throws Exception {
         endpoint.expectedMessageCount(1);
         producer.sendBodyAndHeader(new Object(), HEADER_HISTOGRAM_VALUE, 181L);
-        DistributionSummary summary = registry.find(MicrometerConstants.HEADER_PREFIX + "." + "A").summary();
+        DistributionSummary summary = registry.find("A").summary();
         assertEquals(1L, summary.count());
-        HistogramSnapshot snapshot = summary.takeSnapshot(false);
+        HistogramSnapshot snapshot = summary.takeSnapshot();
         assertEquals(181.0D, snapshot.total(), 0.01D);
         endpoint.assertIsSatisfied();
     }

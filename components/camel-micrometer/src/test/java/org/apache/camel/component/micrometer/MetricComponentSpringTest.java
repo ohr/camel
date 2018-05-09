@@ -35,6 +35,8 @@ import org.mockito.Mockito;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.context.ContextConfiguration;
+import static org.mockito.ArgumentMatchers.anyIterable;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.when;
 
@@ -79,11 +81,11 @@ public class MetricComponentSpringTest {
         MeterRegistry mockRegistry = endpoint.getCamelContext().getRegistry().lookupByNameAndType(MicrometerConstants.METRICS_REGISTRY_NAME, MeterRegistry.class);
         Counter mockCounter = Mockito.mock(Counter.class);
         InOrder inOrder = Mockito.inOrder(mockRegistry, mockCounter);
-        when(mockRegistry.counter(MicrometerConstants.HEADER_PREFIX + "." + "A", Tags.empty())).thenReturn(mockCounter);
+        when(mockRegistry.counter(eq("A"), anyIterable())).thenReturn(mockCounter);
         endpoint.expectedMessageCount(1);
         producer.sendBody(new Object());
         endpoint.assertIsSatisfied();
-        inOrder.verify(mockRegistry, times(1)).counter(MicrometerConstants.HEADER_PREFIX + "." + "A", Tags.empty());
+        inOrder.verify(mockRegistry, times(1)).counter(eq("A"), anyIterable());
         inOrder.verify(mockCounter, times(1)).increment(512D);
         inOrder.verifyNoMoreInteractions();
     }

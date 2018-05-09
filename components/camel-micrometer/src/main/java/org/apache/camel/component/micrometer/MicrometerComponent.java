@@ -44,9 +44,6 @@ public class MicrometerComponent extends UriEndpointComponent {
     @Metadata(label = "advanced")
     private MeterRegistry metricsRegistry;
 
-    @Metadata(label = "advanced")
-    private String prefix;
-
     public MicrometerComponent() {
         super(MicrometerEndpoint.class);
     }
@@ -57,10 +54,7 @@ public class MicrometerComponent extends UriEndpointComponent {
             Registry camelRegistry = getCamelContext().getRegistry();
             metricsRegistry = getOrCreateMeterRegistry(camelRegistry, MicrometerConstants.METRICS_REGISTRY_NAME);
         }
-        if (prefix == null) {
-            prefix = MicrometerConstants.HEADER_PREFIX;
-        }
-        String metricsName = getMetricsName(remaining, prefix);
+        String metricsName = getMetricsName(remaining);
         MetricsType metricsType = getMetricsType(remaining);
         Iterable<Tag> tags = getMetricsTag(parameters);
 
@@ -70,9 +64,9 @@ public class MicrometerComponent extends UriEndpointComponent {
         return endpoint;
     }
 
-    String getMetricsName(String remaining, String prefix) {
+    String getMetricsName(String remaining) {
         String name = StringHelper.after(remaining, ":");
-        return prefix + "." + (name == null ? remaining : name);
+        return name == null ? remaining : name;
     }
 
     MetricsType getMetricsType(String remaining) {

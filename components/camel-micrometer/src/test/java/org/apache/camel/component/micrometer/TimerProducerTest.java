@@ -22,6 +22,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.Timer;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.Before;
@@ -41,6 +42,9 @@ public class TimerProducerTest {
 
     private static final String METRICS_NAME = "metrics.name";
     private static final String PROPERTY_NAME = "timer" + ":" + METRICS_NAME;
+
+    @Mock
+    private CamelContext camelContext;
 
     @Mock
     private MicrometerEndpoint endpoint;
@@ -73,6 +77,8 @@ public class TimerProducerTest {
         producer = new TimerProducer(endpoint);
         when(endpoint.getRegistry()).thenReturn(registry);
         when(exchange.getIn()).thenReturn(in);
+        when(registry.config()).thenReturn(config);
+        when(config.clock()).thenReturn(clock);
     }
 
     @Test
@@ -86,8 +92,6 @@ public class TimerProducerTest {
         when(endpoint.getAction()).thenReturn(MicrometerTimerAction.start);
         when(in.getHeader(HEADER_TIMER_ACTION, MicrometerTimerAction.start, MicrometerTimerAction.class)).thenReturn(MicrometerTimerAction.start);
         when(exchange.getProperty(PROPERTY_NAME, Timer.Sample.class)).thenReturn(null);
-        when(registry.config()).thenReturn(config);
-        when(config.clock()).thenReturn(clock);
         producer.doProcess(exchange, METRICS_NAME, Tags.empty());
     }
 
@@ -96,8 +100,6 @@ public class TimerProducerTest {
         when(endpoint.getAction()).thenReturn(MicrometerTimerAction.stop);
         when(in.getHeader(HEADER_TIMER_ACTION, MicrometerTimerAction.stop, MicrometerTimerAction.class)).thenReturn(MicrometerTimerAction.start);
         when(exchange.getProperty(PROPERTY_NAME, Timer.Sample.class)).thenReturn(null);
-        when(registry.config()).thenReturn(config);
-        when(config.clock()).thenReturn(clock);
         producer.doProcess(exchange, METRICS_NAME, Tags.empty());
     }
 
@@ -108,8 +110,6 @@ public class TimerProducerTest {
         when(endpoint.getAction()).thenReturn(null);
         when(in.getHeader(HEADER_TIMER_ACTION, action, MicrometerTimerAction.class)).thenReturn(MicrometerTimerAction.start);
         when(exchange.getProperty(PROPERTY_NAME, Timer.Sample.class)).thenReturn(null);
-        when(registry.config()).thenReturn(config);
-        when(config.clock()).thenReturn(clock);
         producer.doProcess(exchange, METRICS_NAME, Tags.empty());
     }
 
@@ -120,7 +120,7 @@ public class TimerProducerTest {
         when(exchange.getProperty(PROPERTY_NAME, Timer.Sample.class)).thenReturn(sample);
         when(endpoint.getRegistry()).thenReturn(registry);
         when(registry.timer(METRICS_NAME, Tags.empty())).thenReturn(timer);
-        when(timer.getId()).thenReturn(new Meter.Id(METRICS_NAME, Collections.emptyList(), null, null, Meter.Type.TIMER));
+        when(timer.getId()).thenReturn(new Meter.Id(METRICS_NAME, Tags.empty(), null, null, Meter.Type.TIMER));
         when(exchange.getProperty(PROPERTY_NAME, Timer.Sample.class)).thenReturn(sample);
         when(sample.stop(timer)).thenReturn(0L);
         when(exchange.removeProperty(PROPERTY_NAME)).thenReturn(null);

@@ -37,7 +37,7 @@ public class MicrometerRoutePolicySubRouteTest extends AbstractMicrometerRoutePo
         assertMockEndpointsSatisfied();
 
         // there should be 2 names
-        List<Meter> meters = registry.getMeters();
+        List<Meter> meters = meterRegistry.getMeters();
         assertEquals(2, meters.size());
         meters.forEach(meter -> assertTrue(meter instanceof Timer));
     }

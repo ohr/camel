@@ -71,13 +71,6 @@ public class MicrometerRoutePolicyFactory implements RoutePolicyFactory {
         this.durationUnit = durationUnit;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String prefix) {
-        this.name = name;
-    }
 
     @Override
     public RoutePolicy createRoutePolicy(CamelContext camelContext, String routeId, RouteDefinition routeDefinition) {
@@ -85,7 +78,6 @@ public class MicrometerRoutePolicyFactory implements RoutePolicyFactory {
         answer.setMeterRegistry(getMeterRegistry());
         answer.setPrettyPrint(isPrettyPrint());
         answer.setDurationUnit(getDurationUnit());
-        answer.setName(name);
         return answer;
     }
 

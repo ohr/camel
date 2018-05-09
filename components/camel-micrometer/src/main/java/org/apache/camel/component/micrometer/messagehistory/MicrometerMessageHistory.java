@@ -35,20 +35,18 @@ public class MicrometerMessageHistory extends DefaultMessageHistory {
     private final Route route;
     private final Timer.Sample sample;
     private final MeterRegistry meterRegistry;
-    private final String name;
 
-    public MicrometerMessageHistory(MeterRegistry meterRegistry, Route route, NamedNode namedNode, String name, long timestamp) {
+    public MicrometerMessageHistory(MeterRegistry meterRegistry, Route route, NamedNode namedNode, long timestamp) {
         super(route.getId(), namedNode, timestamp);
         this.meterRegistry = meterRegistry;
         this.route = route;
-        this.name = name;
         this.sample = Timer.start(meterRegistry);
     }
 
     @Override
     public void nodeProcessingDone() {
         super.nodeProcessingDone();
-        Timer timer = Timer.builder(name != null ? name : DEFAULT_CAMEL_MESSAGE_HISTORY_METER_NAME)
+        Timer timer = Timer.builder(DEFAULT_CAMEL_MESSAGE_HISTORY_METER_NAME)
                 .tag(CAMEL_CONTEXT_TAG, route.getRouteContext().getCamelContext().getName())
                 .tag(ROUTE_ID_TAG, getRouteId())
                 .tag(NODE_ID_TAG, getNode().getId())

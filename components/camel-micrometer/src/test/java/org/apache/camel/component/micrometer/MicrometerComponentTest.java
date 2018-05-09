@@ -80,7 +80,7 @@ public class MicrometerComponentTest {
         assertThat(result, is(notNullValue()));
         assertThat(result, is(instanceOf(MicrometerEndpoint.class)));
         MicrometerEndpoint me = (MicrometerEndpoint) result;
-        assertThat(me.getMetricsName(), is(MicrometerConstants.HEADER_PREFIX + "." + "counter"));
+        assertThat(me.getMetricsName(), is("counter"));
         assertThat(me.getRegistry(), is(metricRegistry));
         inOrder.verify(camelContext, times(1)).getRegistry();
         inOrder.verify(camelRegistry, times(1)).lookupByNameAndType(MicrometerConstants.METRICS_REGISTRY_NAME, MeterRegistry.class);

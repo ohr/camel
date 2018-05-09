@@ -36,10 +36,7 @@ public class TimerProducer extends AbstractMicrometerProducer<Timer> {
 
     @Override
     protected Function<MeterRegistry, Timer> registrar(String name, Iterable<Tag> tags) {
-        return meterRegistry ->
-            Timer.builder(name)
-                .tags(tags)
-                .register(meterRegistry);
+        return meterRegistry -> meterRegistry.timer(name, tags);
     }
 
     @Override

@@ -20,6 +20,7 @@ import java.util.function.Function;
 import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultCamelContext;
@@ -45,6 +46,9 @@ public class AbstractMicrometerProducerTest {
     public static final String METRIC_NAME = "a metric";
 
     @Mock
+    private CamelContext camelContext;
+
+    @Mock
     private MicrometerEndpoint endpoint;
 
     @Mock
@@ -68,7 +72,7 @@ public class AbstractMicrometerProducerTest {
 
             @Override
             protected Function<MeterRegistry, Meter> registrar(String name, Iterable<Tag> list) {
-                return null;
+                return registry -> null;
             }
 
             @Override
@@ -79,7 +83,7 @@ public class AbstractMicrometerProducerTest {
 
             @Override
             protected Function<MeterRegistry, Meter> registrar(String name, Iterable<Tag> list) {
-                return null;
+                return registry -> null;
             }
 
             @Override
@@ -89,6 +93,8 @@ public class AbstractMicrometerProducerTest {
         };
         inOrder = Mockito.inOrder(endpoint, exchange, in, registry);
         when(exchange.getIn()).thenReturn(in);
+        when(endpoint.getCamelContext()).thenReturn(camelContext);
+        when(camelContext.getName()).thenReturn("camelContext-1");
         when(endpoint.getMetricsName()).thenReturn(METRIC_NAME);
         when(endpoint.getRegistry()).thenReturn(registry);
     }

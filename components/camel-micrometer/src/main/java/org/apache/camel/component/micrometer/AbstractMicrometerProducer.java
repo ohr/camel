@@ -25,17 +25,12 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.apache.camel.impl.DefaultProducer;
 import org.apache.camel.util.ObjectHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import static org.apache.camel.component.micrometer.MicrometerConstants.CAMEL_CONTEXT_TAG;
 
 
 public abstract class AbstractMicrometerProducer<T extends Meter> extends DefaultProducer {
 
     public static final String HEADER_PATTERN = MicrometerConstants.HEADER_PREFIX + "*";
-    private static final Logger LOG = LoggerFactory.getLogger(AbstractMicrometerProducer.class);
-
-    private String prefix = MicrometerConstants.HEADER_PREFIX;
 
     public AbstractMicrometerProducer(MicrometerEndpoint endpoint) {
         super(endpoint);
@@ -46,13 +41,6 @@ public abstract class AbstractMicrometerProducer<T extends Meter> extends Defaul
         return (MicrometerEndpoint) super.getEndpoint();
     }
 
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
 
     @Override
     public void process(Exchange exchange) {
@@ -75,14 +63,7 @@ public abstract class AbstractMicrometerProducer<T extends Meter> extends Defaul
     protected abstract Function<MeterRegistry, T> registrar(String name, Iterable<Tag> tags);
 
     protected void doProcess(Exchange exchange, String name, Iterable<Tag> tags) {
-        try {
-
-            doProcess(exchange, getEndpoint(), getOrRegisterMeter(name, tags));
-        } catch (Exception e) {
-            exchange.setException(e);
-        } finally {
-            clearMetricsHeaders(exchange.getIn());
-        }
+        doProcess(exchange, getEndpoint(), getOrRegisterMeter(name, tags));
     }
 
     protected T getOrRegisterMeter(String name, Iterable<Tag> tags) {
@@ -114,7 +95,7 @@ public abstract class AbstractMicrometerProducer<T extends Meter> extends Defaul
     }
 
     public Iterable<Tag> getTagHeader(Message in, String header, Iterable<Tag> defaultTags) {
-        return (Iterable<Tag>)in.getHeader(header, defaultTags, Iterable.class);
+        return (Iterable<Tag>) in.getHeader(header, defaultTags, Iterable.class);
     }
 
     protected boolean clearMetricsHeaders(Message in) {

@@ -16,15 +16,14 @@
  */
 package org.apache.camel.component.micrometer.routepolicy;
 
-import io.micrometer.core.instrument.MeterRegistry;
-import org.apache.camel.CamelContextAware;
-import org.apache.camel.StaticService;
-import org.apache.camel.api.management.ManagedResource;
-import org.apache.camel.component.micrometer.json.AbstractMicrometerService;
+import org.apache.camel.api.management.ManagedOperation;
 
-/**
- * Service holding the {@link MeterRegistry} which registers all metrics.
- */
-@ManagedResource(description = "MicrometerRegistry")
-public final class MicrometerRegistryService extends AbstractMicrometerService implements CamelContextAware, StaticService, MicrometerRegistryMBean {
+public interface MicrometerRoutePolicyMBean {
+
+    @ManagedOperation(description = "Dumps the statistics as json")
+    String dumpStatisticsAsJson();
+
+    @ManagedOperation(description = "Dumps the statistics as json using seconds for time units")
+    String dumpStatisticsAsJsonTimeUnitSeconds();
+
 }

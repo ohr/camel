@@ -42,7 +42,7 @@ public class MicrometerRoutePolicyMulticastSubRouteTest extends AbstractMicromet
         assertMockEndpointsSatisfied();
 
         // there should be 3 names
-        List<Meter> meters = registry.getMeters();
+        List<Meter> meters = meterRegistry.getMeters();
         assertEquals(3, meters.size());
 
 
