@@ -23,6 +23,8 @@ import io.micrometer.jmx.JmxConfig;
  */
 public final class CamelJmxConfig implements JmxConfig {
 
+    public static final CamelJmxConfig DEFAULT = new CamelJmxConfig();
+
     @Override
     public String get(String key) {
         return null;

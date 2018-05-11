@@ -51,7 +51,7 @@ public class TimerProducer extends AbstractMicrometerProducer<Timer> {
     protected void doProcess(Exchange exchange, String metricsName, Iterable<Tag> tags) {
         MeterRegistry registry = getEndpoint().getRegistry();
         Message in = exchange.getIn();
-        MicrometerTimerAction action = getEndpoint().getAction();
+        MicrometerTimerAction action = simple(exchange, getEndpoint().getAction(), MicrometerTimerAction.class);
         MicrometerTimerAction finalAction = in.getHeader(HEADER_TIMER_ACTION, action, MicrometerTimerAction.class);
         if (finalAction == MicrometerTimerAction.start) {
             handleStart(exchange, registry, metricsName);

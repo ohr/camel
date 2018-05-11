@@ -19,6 +19,7 @@ package org.apache.camel.component.micrometer.messagehistory;
 import java.util.Set;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import io.micrometer.core.instrument.Clock;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -51,7 +52,7 @@ public class ManagedMessageHistoryTest extends CamelTestSupport {
         JndiRegistry registry = super.createRegistry();
         meterRegistry = new CompositeMeterRegistry();
         meterRegistry.add(new SimpleMeterRegistry());
-        meterRegistry.add(new JmxMeterRegistry(new CamelJmxConfig(), new MockClock(), HierarchicalNameMapper.DEFAULT));
+        meterRegistry.add(new JmxMeterRegistry(new CamelJmxConfig(), Clock.SYSTEM, HierarchicalNameMapper.DEFAULT));
         registry.bind(MicrometerConstants.METRICS_REGISTRY_NAME, meterRegistry);
         return registry;
     }

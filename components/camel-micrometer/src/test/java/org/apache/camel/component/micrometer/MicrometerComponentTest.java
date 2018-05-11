@@ -21,6 +21,7 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import org.apache.camel.CamelContext;
 import org.apache.camel.Endpoint;
 import org.apache.camel.RuntimeCamelException;
@@ -92,28 +93,28 @@ public class MicrometerComponentTest {
 
     @Test
     public void testCreateNewEndpointForCounter() {
-        Endpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.COUNTER, "a name", Collections.emptyList());
+        Endpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.COUNTER, "a name", Tags.empty());
         assertThat(endpoint, is(notNullValue()));
         assertThat(endpoint, is(instanceOf(MicrometerEndpoint.class)));
     }
 
     @Test
     public void testCreateNewEndpointForGauge() {
-        MicrometerEndpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.GAUGE, "a name", Collections.emptyList());
+        MicrometerEndpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.GAUGE, "a name", Tags.empty());
         assertThat(endpoint, is(notNullValue()));
         assertThat(endpoint, is(instanceOf(MicrometerEndpoint.class)));
     }
 
     @Test
     public void testCreateNewEndpointForHistogram() {
-        Endpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.DISTRIBUTION_SUMMARY, "a name", Collections.emptyList());
+        Endpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.DISTRIBUTION_SUMMARY, "a name", Tags.empty());
         assertThat(endpoint, is(notNullValue()));
         assertThat(endpoint, is(instanceOf(MicrometerEndpoint.class)));
     }
 
     @Test
     public void testCreateNewEndpointForTimer() {
-        Endpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.TIMER, "a name", Collections.emptyList());
+        Endpoint endpoint = new MicrometerEndpoint(null, null, metricRegistry, MetricsType.TIMER, "a name", Tags.empty());
         assertThat(endpoint, is(notNullValue()));
         assertThat(endpoint, is(instanceOf(MicrometerEndpoint.class)));
     }

@@ -49,7 +49,7 @@ import static org.junit.Assert.assertTrue;
 @MockEndpoints
 public class TimerRouteTest {
 
-    private static final long DELAY = 100L;
+    private static final long DELAY = 20L;
 
     @EndpointInject(uri = "mock:out")
     private MockEndpoint endpoint;
@@ -94,7 +94,7 @@ public class TimerRouteTest {
                     from("direct:in-3")
                             .to("micrometer:timer:C?action=start")
                             .delay(DELAY)
-                            .to("micrometer:timer:C?action=stop&tags=a=b")
+                            .to("micrometer:timer:C?action=stop&tags=a=${body}")
                             .to("mock:out");
                 }
             };
@@ -142,7 +142,7 @@ public class TimerRouteTest {
     @Test
     public void testNormal() throws Exception {
         int count = 10;
-        Object body = new Object();
+        String body = "Hello";
         endpoint.expectedMessageCount(count);
         for (int i = 0; i < count; i++) {
             producer3.sendBody(body);
@@ -152,7 +152,7 @@ public class TimerRouteTest {
         assertTrue(timer.max(TimeUnit.MILLISECONDS) > DELAY);
         assertTrue(timer.mean(TimeUnit.MILLISECONDS) > DELAY);
         assertTrue(timer.totalTime(TimeUnit.MILLISECONDS) > DELAY * count);
-        assertEquals("b", timer.getId().getTag("a"));
+        assertEquals(body, timer.getId().getTag("a"));
         endpoint.assertIsSatisfied();
     }
 }

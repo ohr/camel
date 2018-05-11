@@ -90,8 +90,7 @@ public class CounterRouteTest {
                             .to("mock:out");
 
                     from("direct:in-4")
-                            .setHeader(HEADER_COUNTER_INCREMENT, simple("${body.length}"))
-                            .to("micrometer:counter:D?tags=a=b")
+                            .to("micrometer:counter:D?increment=${body.length}&tags=a=${body.length}")
                             .to("mock:out");
                 }
             };
@@ -146,13 +145,13 @@ public class CounterRouteTest {
     }
 
     @Test
-    public void testOverrideUsingScriptEvaluation() throws Exception {
+    public void testUsingScriptEvaluation() throws Exception {
         endpoint.expectedMessageCount(1);
         String message = "Hello from Camel Metrics!";
         producer4.sendBody(message);
         Counter counter = registry.find("D").counter();
         assertEquals(message.length(), counter.count(), 0.01D);
-        assertEquals("b", counter.getId().getTag("a"));
+        assertEquals(Integer.toString(message.length()), counter.getId().getTag("a"));
         endpoint.assertIsSatisfied();
     }
 }
